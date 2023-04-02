@@ -1,16 +1,11 @@
-from app.config import get_config
-
+from app.config import config
+from app.routes.auth import auth_bp
 from sanic import Sanic
 from sanic.response import json
-from dotenv import load_dotenv, find_dotenv, dotenv_values
 
 app = Sanic(__name__)
 
-config: dict = get_config()
-
-@app.get('/')
-async def index(request):
-    return json({"message": "hello"})
+app.blueprint(auth_bp)
 
 if __name__ == '__main__':
-    app.run(host=config['app']['host'], port=config['app']['port'], debug=config['app']['debug'])
+    app.run(host=config.HOST, port=config.PORT, debug=config.DEBUG)
