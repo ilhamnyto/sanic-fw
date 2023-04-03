@@ -1,0 +1,34 @@
+version: '3.9'
+
+services:
+  app:
+    build: .
+    ports:
+      - "5555:5555"
+    depends_on:
+      - db
+    environment:
+      HOST: 0.0.0.0
+      PORT: 5555
+      DEBUG: True
+      SECRET_KEY: JIajdadYDYAdajUWdKNW
+
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_NAME: sanicfw
+    command: python run.py
+
+  db:
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_DB: sanicfw
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:

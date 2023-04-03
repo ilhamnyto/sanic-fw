@@ -13,4 +13,5 @@ async def register(request: Request) -> None:
 @auth_bp.post('/login')
 async def login(request: Request) -> None:
     data: dict = request.json
+    print(data)
     return await login_controller(data=data)

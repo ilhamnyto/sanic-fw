@@ -20,11 +20,11 @@ async def get_user_by_username(username: str) -> User:
     await conn.close()
     return user
 
-async def get_user_by_email(email: str) -> User:
+async def get_user_by_username_and_email(username: str, email: str) -> User:
     conn = await asyncpg.connect(config.POSTGRES_DSN)
     query = """
-        SELECT * from users WHERE email = $1
+        SELECT * from users WHERE username = $1 or email = $2
     """
-    user = await conn.fetchrow(query, email)
+    user = await conn.fetchrow(query, username, email)
     await conn.close()
     return user
