@@ -1,6 +1,7 @@
 from app.config import config
-import asyncpg
 from app.domain.user import User
+
+import asyncpg
 
 async def create_user(user: User) -> None:
     conn = await asyncpg.connect(config.POSTGRES_DSN)
@@ -20,7 +21,7 @@ async def get_user_by_username(username: str) -> User:
     await conn.close()
     return user
 
-async def get_user_by_username_and_email(username: str, email: str) -> User:
+async def get_user_by_username_and_email(username: str, email: str) -> asyncpg.Record:
     conn = await asyncpg.connect(config.POSTGRES_DSN)
     query = """
         SELECT * from users WHERE username = $1 or email = $2
