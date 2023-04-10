@@ -1,15 +1,23 @@
 from app.domain.post import Post
 from typing import List
 from app.config import config
+from datetime import datetime
+from typing import Optional
 
 import asyncpg
 
-async def get_all_posts(page_num: int, limit: int) -> List[asyncpg.Record]:
+async def get_all_posts(limit: int, cursor: Optional[int] = None) -> List[asyncpg.Record]:
     conn = await asyncpg.connect(config.POSTGRES_DSN)
     query = """
-        SELECT * FROM posts 
+        SELECT p.id, u.id, u.username, p.body, p.created_at from posts as p LEFT JOIN
+        users as u ON p.user_id = u.id
     """
-    posts = await conn.fetch(query)
+    if cursor is not None:
+        cursor = datetime.fromtimestamp(cursor)
+        query += " WHERE created_at > {cursor}"
+    
+    query += " LIMIT $1"
+    posts = await conn.fetch(query, limit)
     await conn.close()
     return posts
 
