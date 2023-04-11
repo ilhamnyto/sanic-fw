@@ -1,4 +1,4 @@
-from app.controllers.post import all_posts_controller, get_posts_controller, search_posts_controller, create_posts_controller
+from app.controllers.post import all_posts_controller, get_posts_controller, search_posts_controller, create_posts_controller, my_posts_controller
 from app.utils.jwt import validate_token
 
 from sanic import Request, Blueprint
@@ -15,6 +15,13 @@ async def all_posts(request: Request) -> JSONResponse:
     cursor = int(request.args.get("cursor")) if request.args.get("cursor") else None
     limit = int(request.args.get("limit")) if request.args.get("limit") else 10
     return await all_posts_controller(limit, cursor)
+
+@post_bp.get('/me')
+async def my_posts(request: Request) -> JSONResponse:
+    user_id = request.ctx.user_id
+    cursor = int(request.args.get("cursor")) if request.args.get("cursor") else None
+    limit = int(request.args.get("limit")) if request.args.get("limit") else 10
+    return await my_posts_controller(user_id, limit, cursor)
 
 @post_bp.post('/create')
 async def create_posts(request: Request) -> JSONResponse:

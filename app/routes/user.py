@@ -1,4 +1,4 @@
-from app.controllers.user import all_users_controller, get_users_controller, search_users_controller
+from app.controllers.user import all_users_controller, get_users_controller, search_users_controller, my_profile_controller
 from app.utils.jwt import validate_token
 
 from sanic import Blueprint, Request
@@ -17,6 +17,12 @@ async def all_users(request: Request) -> JSONResponse:
     limit = int(request.args.get("limit")) if request.args.get("limit") else 10
     
     return await all_users_controller(page_num, limit)
+
+@users_bp.get('/me')
+async def my_profile(request: Request) -> JSONResponse:
+    user_id = request.ctx.user_id
+    print(user_id)
+    return await my_profile_controller(user_id)
 
 @users_bp.get('/search')
 async def search_users(request: Request) -> JSONResponse:

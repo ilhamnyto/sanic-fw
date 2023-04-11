@@ -1,5 +1,5 @@
 from app.repositories.postgres.auth import get_user_by_username
-from app.repositories.postgres.user import get_all_users, search_users
+from app.repositories.postgres.user import get_all_users, search_users, get_my_profile
 from app.domain.user import User
 from typing import List
 
@@ -9,6 +9,14 @@ async def all_users_services(page_num: int, limit: int) -> List[User]:
         return None
     
     users = [ User(**user) for user in resp]
+    return users
+
+async def my_profile_services(user_id: int) -> User:
+    resp = await get_my_profile(user_id)
+    if not resp:
+        return None
+    
+    users = User(**resp)
     return users
 
 async def get_users_services(username: str) -> User:

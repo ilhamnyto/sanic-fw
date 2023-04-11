@@ -16,6 +16,17 @@ async def get_all_users(page_num: int, limit: int) -> List[asyncpg.Record]:
     await conn.close()
     return users
 
+async def get_my_profile(user_id: int) -> asyncpg.Record:
+    conn = await asyncpg.connect(config.POSTGRES_DSN)
+
+    query = """
+        SELECT * FROM users WHERE id = $1
+        """
+    user = await conn.fetchrow(query, user_id)
+
+    await conn.close()
+    return user
+
 async def search_users(search_query: str, page_num: int, limit: int) -> List[asyncpg.Record]:
     conn = await asyncpg.connect(config.POSTGRES_DSN)
     search_query = f"%{search_query}%"

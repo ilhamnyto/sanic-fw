@@ -1,11 +1,22 @@
 import base64
 from app.domain.post import Post, PostData
-from app.repositories.postgres.post import get_all_posts, get_single_post, get_user_posts, create_posts, search_post
+from app.repositories.postgres.post import get_all_posts, get_single_post, get_user_posts, create_posts, search_post, get_my_posts
 from typing import Optional
 from datetime import datetime
 
 async def all_posts_services(limit: int, cursor: Optional[int] = None) -> None:
     resp = await get_all_posts(limit, cursor)
+    if not resp:
+        return None
+    posts = [ PostData(
+        posts_id=base64.b64encode(f'{post["posts_id"]}:{post["username"]}'.encode('utf-8')).decode('utf-8'),
+        username=post["username"],
+        body=post["body"], created_at=post["created_at"].strftime("%Y-%m-%d"),
+        ) for post in resp]
+    return posts
+
+async def my_posts_services(user_id: int, limit: int, cursor: Optional[int] = None) -> None:
+    resp = await get_my_posts(user_id, limit, cursor)
     if not resp:
         return None
     posts = [ PostData(

@@ -21,6 +21,21 @@ async def get_all_posts(limit: int, cursor: Optional[int] = None) -> List[asyncp
     await conn.close()
     return posts
 
+async def get_my_posts(user_id: int, limit: int, cursor: Optional[int] = None) -> List[asyncpg.Record]:
+    conn = await asyncpg.connect(config.POSTGRES_DSN)
+    query = """
+        SELECT p.id as posts_id, u.id as user_id, u.username, p.body, p.created_at from posts as p LEFT JOIN
+        users as u ON p.user_id = u.id WHERE u.id = $1
+    """
+    if cursor is not None:
+        cursor = datetime.fromtimestamp(cursor)
+        query += " AND created_at > {cursor}"
+    
+    query += " ORDER BY created_at DESC LIMIT $2"
+    posts = await conn.fetch(query, user_id, limit)
+    await conn.close()
+    return posts
+
 async def create_posts(post: Post) -> None:
     conn = await asyncpg.connect(config.POSTGRES_DSN)
     query = """

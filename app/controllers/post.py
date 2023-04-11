@@ -1,6 +1,6 @@
 from dataclasses import asdict
 from app.schemas.basic import ErrorResponse
-from app.services.post import all_posts_services, create_posts_services, get_single_post_services, get_user_posts_services, search_post_services
+from app.services.post import all_posts_services, create_posts_services, get_single_post_services, get_user_posts_services, search_post_services, my_posts_services
 from app.schemas.post import PostResponse, PostData
 from app.schemas.basic import SuccessResponse
 from typing import Optional
@@ -11,6 +11,19 @@ from sanic.log import logger
 async def all_posts_controller(limit: int, cursor: Optional[int] = None) -> JSONResponse:
     try:
         posts = await all_posts_services(limit, cursor)
+        data = []
+        if posts:
+            data = [PostData(id=post.posts_id, username=post.username, body=post.body, created_at=post.created_at) for post in posts]
+        success = PostResponse(data=data, status=200)
+        return json(asdict(success), status=success.status)
+    except Exception as e:
+        logger.error(e)
+        error = ErrorResponse(message=e, err_code="ERR", status=500)
+        return json(asdict(error), status=error.status)
+    
+async def my_posts_controller(user_id: int, limit: int, cursor: Optional[int] = None) -> JSONResponse:
+    try:
+        posts = await my_posts_services(user_id, limit, cursor)
         data = []
         if posts:
             data = [PostData(id=post.posts_id, username=post.username, body=post.body, created_at=post.created_at) for post in posts]
