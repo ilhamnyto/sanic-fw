@@ -1,9 +1,15 @@
 from app.controllers.user import all_users_controller, get_users_controller, search_users_controller
+from app.utils.jwt import validate_token
 
 from sanic import Blueprint, Request
 from sanic.response import JSONResponse
 
+
 users_bp = Blueprint("users", url_prefix="api/v1/users")
+
+@users_bp.on_request
+async def middleware(request: Request):
+    await validate_token(request)
 
 @users_bp.get('/')
 async def all_users(request: Request) -> JSONResponse:

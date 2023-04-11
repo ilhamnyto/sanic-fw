@@ -2,6 +2,7 @@ from app.config import config
 from app.routes.auth import auth_bp
 from app.routes.user import users_bp
 from app.routes.post import post_bp
+
 from sanic import Sanic
 from sanic.response import json
 

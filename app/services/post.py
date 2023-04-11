@@ -16,7 +16,7 @@ async def all_posts_services(limit: int, cursor: Optional[int] = None) -> None:
     return posts
 
 async def create_posts_services(data: dict) -> None:
-    post = Post(**data, user_id=2, created_at=datetime.now())
+    post = Post(**data, created_at=datetime.now())
     await create_posts(post)
 
 async def get_user_posts_services(username: str) -> None:

@@ -1,9 +1,14 @@
 from app.controllers.post import all_posts_controller, get_posts_controller, search_posts_controller, create_posts_controller
+from app.utils.jwt import validate_token
 
 from sanic import Request, Blueprint
-from sanic.response import JSONResponse, json
+from sanic.response import JSONResponse
 
 post_bp = Blueprint("posts", url_prefix="api/v1/posts")
+
+@post_bp.on_request
+async def middleware(request: Request):
+    await validate_token(request)
 
 @post_bp.get('/')
 async def all_posts(request: Request) -> JSONResponse:
@@ -14,6 +19,7 @@ async def all_posts(request: Request) -> JSONResponse:
 @post_bp.post('/create')
 async def create_posts(request: Request) -> JSONResponse:
     data: dict = request.json
+    data['user_id'] = request.ctx.user_id
     return await create_posts_controller(data)
 
 
