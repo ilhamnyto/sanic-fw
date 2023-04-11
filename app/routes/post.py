@@ -9,8 +9,7 @@ post_bp = Blueprint("posts", url_prefix="api/v1/posts")
 async def all_posts(request: Request) -> JSONResponse:
     cursor = int(request.args.get("cursor")) if request.args.get("cursor") else None
     limit = int(request.args.get("limit")) if request.args.get("limit") else 10
-    await all_posts_controller(limit, cursor)
-    return json({"message": "success"})
+    return await all_posts_controller(limit, cursor)
 
 @post_bp.post('/create')
 async def create_posts(request: Request) -> JSONResponse:
@@ -24,7 +23,7 @@ async def get_posts(request: Request, query_str: str):
 
 @post_bp.get('/search')
 async def search_posts(request: Request) -> JSONResponse:
-    query_str = request.args.get("query")
-    return await search_posts_controller(query_str)
+    search_query = request.args.get("query")
+    return await search_posts_controller(search_query)
 
 

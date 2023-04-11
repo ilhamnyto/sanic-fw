@@ -9,7 +9,7 @@ async def get_all_users(page_num: int, limit: int) -> List[asyncpg.Record]:
 
     page_num = (page_num - 1) * limit
     query = """
-        SELECT * FROM users WHERE id > $1 LIMIT $2 ORDER BY id ASC
+        SELECT * FROM users WHERE id > $1 ORDER BY id ASC LIMIT $2 
     """
     users = await conn.fetch(query, page_num, limit)
 

@@ -11,8 +11,7 @@ class Post:
 
 @dataclass
 class PostData:
-    post_id: int
-    user_id: int
+    posts_id: int
     username: str
     body: str
-    created_at: datetime
+    created_at: str

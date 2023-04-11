@@ -4,9 +4,9 @@ from datetime import datetime
 @dataclass
 class PostData:
     id: str
-    user_id: int
-    body: int
-    created_at: datetime
+    username: str
+    body: str
+    created_at: str
 
 @dataclass
 class PostResponse:

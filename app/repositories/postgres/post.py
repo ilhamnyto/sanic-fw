@@ -9,8 +9,8 @@ import asyncpg
 async def get_all_posts(limit: int, cursor: Optional[int] = None) -> List[asyncpg.Record]:
     conn = await asyncpg.connect(config.POSTGRES_DSN)
     query = """
-        SELECT p.id, u.id, u.username, p.body, p.created_at from posts as p LEFT JOIN
-        users as u ON p.user_id = u.id
+        SELECT p.id as posts_id, u.id as user_id, u.username, p.body, p.created_at from posts as p LEFT JOIN
+        users as u ON p.user_id = u.id ORDER BY created_at DESC
     """
     if cursor is not None:
         cursor = datetime.fromtimestamp(cursor)
@@ -33,29 +33,30 @@ async def create_posts(post: Post) -> None:
 async def get_user_posts(username: str) -> List[asyncpg.Record]:
     conn = await asyncpg.connect(config.POSTGRES_DSN)
     query = """
-        SELECT p.id, u.username, p.body, p.created_at from posts as p LEFT JOIN
-        users as u ON p.user_id = u.id WHERE u.username = $1
+        SELECT p.id as posts_id, u.username, p.body, p.created_at from posts as p LEFT JOIN
+        users as u ON p.user_id = u.id WHERE u.username = $1 ORDER BY created_at DESC
     """
     posts = await conn.fetch(query, username)
     await conn.close()
     return posts
 
 async def get_single_post(post_id: int) -> asyncpg.Record:
-    conn = asyncpg.connect(config.POSTGRES_DSN)
+    conn = await asyncpg.connect(config.POSTGRES_DSN)
     query = """
-        SELECT p.id, u.username, p.body, p.created_at from posts as p LEFT JOIN
+        SELECT p.id as posts_id, u.username, p.body, p.created_at from posts as p LEFT JOIN
         users as u ON p.user_id = u.id WHERE p.id = $1 
     """
     post = await conn.fetchrow(query, post_id)
     await conn.close()
     return post
 
-async def search_post(query_str: str) -> List[asyncpg.Record]:
-    conn = asyncpg.connect(config.POSTGRES_DSN)
+async def search_post(search_query: str) -> List[asyncpg.Record]:
+    conn = await asyncpg.connect(config.POSTGRES_DSN)
+    search_query = f"%{search_query}%"
     query = """
-        SELECT p.id, u.username, p.body, p.created_at from posts as p LEFT JOIN
-        users as u ON p.user_id = u.id WHERE u.username = $1 or p.body LIKE $2
+        SELECT p.id as posts_id, u.username, p.body, p.created_at from posts as p LEFT JOIN
+        users as u ON p.user_id = u.id WHERE u.username LIKE $1 or p.body LIKE $1 ORDER BY created_at DESC
     """
-    posts = await conn.fetch(query)
+    posts = await conn.fetch(query, search_query)
     await conn.close()
     return posts
