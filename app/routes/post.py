@@ -3,6 +3,7 @@ from app.utils.jwt import validate_token
 
 from sanic import Request, Blueprint
 from sanic.response import JSONResponse
+from aioredis import Connection
 
 post_bp = Blueprint("posts", url_prefix="api/v1/posts")
 

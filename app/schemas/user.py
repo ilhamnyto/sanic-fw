@@ -7,6 +7,12 @@ class User:
     email: str
 
 @dataclass
+class Paging:
+    next: str
+    previous: str
+
+@dataclass
 class UserResponse:
     status: int
     data: List[User]
+    paging: Paging
