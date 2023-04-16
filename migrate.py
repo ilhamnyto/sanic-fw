@@ -32,6 +32,7 @@ async def migrate() -> None:
             user_id int NOT NULL,
             body text NOT NULL,
             created_at timestamp,
+            deleted_at timestamp,
             CONSTRAINT fk_posts
             FOREIGN KEY(user_id)
             REFERENCES users(id)
