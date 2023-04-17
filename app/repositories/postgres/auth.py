@@ -29,3 +29,24 @@ async def get_user_by_username_and_email(username: str, email: str) -> asyncpg.R
     user = await conn.fetchrow(query, username, email)
     await conn.close()
     return user
+
+async def get_user_by_phone_number(phone_number: str) -> asyncpg.Record:
+    conn = await asyncpg.connect(config.POSTGRES_DSN)
+    query = """
+        SELECT phone_number from users WHERE phone_number = $1
+    """
+
+    user = await conn.fetchrow(query, phone_number)
+    await conn.close()
+    return user
+
+async def check_user_password(user_id: int):
+    conn = await asyncpg.connect(config.POSTGRES_DSN)
+    query = """
+        SELECT password, salt from users where id = $1
+    """
+
+    user = await conn.fetchrow(query, user_id)
+    await conn.close()
+
+    return user
