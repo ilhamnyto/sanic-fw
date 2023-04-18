@@ -35,3 +35,6 @@ async def search_users_services(search_query: str, page_num: int, limit: int) ->
     users = [ User(**user) for user in resp ]
 
     return users
+
+async def update_profile_services() -> None:
+    pass

@@ -1,4 +1,4 @@
-from app.controllers.user import all_users_controller, get_users_controller, search_users_controller, my_profile_controller
+from app.controllers.user import all_users_controller, get_users_controller, search_users_controller, my_profile_controller, update_user_profile_controller
 from app.utils.jwt import validate_token
 
 from sanic import Blueprint, Request
@@ -21,7 +21,6 @@ async def all_users(request: Request) -> JSONResponse:
 @users_bp.get('/me')
 async def my_profile(request: Request) -> JSONResponse:
     user_id = request.ctx.user_id
-    print(user_id)
     return await my_profile_controller(user_id)
 
 @users_bp.get('/search')
@@ -31,6 +30,13 @@ async def search_users(request: Request) -> JSONResponse:
     limit = int(request.args.get("limit")) if request.args.get("limit") else 10
     return await search_users_controller(search_query, page_num, limit)
 
+@users_bp.put('/profile/update')
+async def update_profile(request: Request) -> JSONResponse:
+    data = request.json
+    data['user_id'] = request.ctx.user_id
+    return await update_user_profile_controller(data)
+
 @users_bp.get('/<username:str>')
 async def get_users(request: Request, username: str) -> JSONResponse:
     return await get_users_controller(username)
+

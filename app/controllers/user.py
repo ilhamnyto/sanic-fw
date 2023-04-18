@@ -65,3 +65,11 @@ async def search_users_controller(search_query: str, page_num: int = 1, limit: i
         logger.error(e)
         error = ErrorResponse(status=500, message="error occured.", err_code="ERR")
         return json(asdict(error), error.status)
+    
+async def update_user_profile_controller(data: dict) -> JSONResponse:
+    try:
+        pass
+    except Exception as e:
+        logger.error(e)
+        error = ErrorResponse(status=500, message="error occured.", err_code="ERR")
+        return json(asdict(error), error.status)

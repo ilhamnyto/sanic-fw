@@ -1,6 +1,7 @@
 from app.domain.user import User
 from app.utils.auth import generate_salt, validate_password, hash_password
 from app.repositories.postgres.auth import create_user, get_user_by_username
+from datetime import datetime
 
 async def register_services(data: dict) -> None:
     salt = await generate_salt()
@@ -9,7 +10,8 @@ async def register_services(data: dict) -> None:
         username=data.get('username'),
         email=data.get('email'),
         password=hashed_password,
-        salt=salt
+        salt=salt,
+        created_at=datetime.now()
     )
     await create_user(user)
 
