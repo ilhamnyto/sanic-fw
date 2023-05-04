@@ -5,11 +5,12 @@ from typing import List
 class User:
     username: str
     email: str
+    created_at: str
 
 @dataclass
 class Paging:
+    current: str
     next: str
-    previous: str
 
 @dataclass
 class UserResponse:

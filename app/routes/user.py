@@ -26,9 +26,8 @@ async def my_profile(request: Request) -> JSONResponse:
 @users_bp.get('/search')
 async def search_users(request: Request) -> JSONResponse:
     search_query = request.args.get("query")
-    page_num = int(request.args.get("page_num")) if request.args.get("page_num") else 1
-    limit = int(request.args.get("limit")) if request.args.get("limit") else 10
-    return await search_users_controller(search_query, page_num, limit)
+    cursor = int(request.args.get("cursor")) if request.args.get("cursor") else None
+    return await search_users_controller(search_query, cursor)
 
 @users_bp.put('/profile/update')
 async def update_profile(request: Request) -> JSONResponse:
