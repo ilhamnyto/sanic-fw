@@ -4,23 +4,35 @@ from typing import List
 
 import asyncpg
 
-async def get_all_users(page_num: int, limit: int) -> List[asyncpg.Record]:
+async def get_all_users(cursor: int) -> List[asyncpg.Record]:
     conn = await asyncpg.connect(config.POSTGRES_DSN)
 
-    page_num = (page_num - 1) * limit
     query = """
-        SELECT username, email, created_at FROM users WHERE id > $1 ORDER BY id ASC LIMIT $2 
+        SELECT username, email, date_trunc('second', created_at) as created_at FROM users
     """
-    users = await conn.fetch(query, page_num, limit)
+    if cursor:
+        query += f" WHERE date_trunc('second', created_at) > '{cursor}'"
+
+    query += " limit 6"
+    users = await conn.fetch(query)
 
     await conn.close()
     return users
+
+async def get_user_by_username(username: str) -> User:
+    conn = await asyncpg.connect(config.POSTGRES_DSN)
+    query = """
+        SELECT username, email, date_trunc('second', created_at) as created_at FROM users where username = $1
+    """
+    user = await conn.fetchrow(query, username)
+    await conn.close()
+    return user
 
 async def get_my_profile(user_id: int) -> asyncpg.Record:
     conn = await asyncpg.connect(config.POSTGRES_DSN)
 
     query = """
-        SELECT username, email, created_at FROM users WHERE id = $1
+        SELECT username, email, date_trunc('second', created_at) as created_at FROM users where id = $1
         """
     user = await conn.fetchrow(query, user_id)
 
@@ -32,13 +44,12 @@ async def search_users(search_query: str, cursor: str) -> List[asyncpg.Record]:
     search_query = f"%{search_query}%"
 
     query = """
-        SELECT username, email, created_at FROM users WHERE username like $1 or email like $1
+        SELECT username, email, date_trunc('second', created_at) as created_at FROM users WHERE
     """
-
     if cursor:
-        query += f" and created_at > '{cursor}'"
+        query += f" date_trunc('second', created_at) > '{cursor}' and"
 
-    query += ' limit 5'
+    query += ' (username like $1 or email like $1) limit 6'
     
     users = await conn.fetch(query, search_query)
 

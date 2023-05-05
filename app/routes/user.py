@@ -13,10 +13,9 @@ async def middleware(request: Request):
 
 @users_bp.get('/')
 async def all_users(request: Request) -> JSONResponse:
-    page_num = int(request.args.get("page_num")) if request.args.get("page_num") else 1
-    limit = int(request.args.get("limit")) if request.args.get("limit") else 10
+    cursor = int(request.args.get("cursor")) if request.args.get("cursor") else None
     
-    return await all_users_controller(page_num, limit)
+    return await all_users_controller(cursor)
 
 @users_bp.get('/me')
 async def my_profile(request: Request) -> JSONResponse:

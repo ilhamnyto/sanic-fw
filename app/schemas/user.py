@@ -9,8 +9,8 @@ class User:
 
 @dataclass
 class Paging:
-    current: str
-    next: str
+    cursor: str
+    next: bool
 
 @dataclass
 class UserResponse:
