@@ -6,10 +6,10 @@ import asyncpg
 async def create_user(user: User) -> None:
     conn = await asyncpg.connect(config.POSTGRES_DSN)
     query = """
-        INSERT INTO users (username, email, password, salt) VALUES
-        ($1, $2, $3, $4)
+        INSERT INTO users (username, email, password, salt, created_at) VALUES
+        ($1, $2, $3, $4, $5)
     """
-    await conn.execute(query, user.username, user.email, user.password, user.salt)
+    await conn.execute(query, user.username, user.email, user.password, user.salt, user.created_at)
     await conn.close()
 
 async def get_user_by_username(username: str) -> User:
