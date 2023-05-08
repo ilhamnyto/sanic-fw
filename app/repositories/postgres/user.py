@@ -1,6 +1,7 @@
 from app.config import config
 from app.domain.user import User
 from typing import List
+from datetime import datetime
 
 import asyncpg
 
@@ -56,5 +57,35 @@ async def search_users(search_query: str, cursor: str) -> List[asyncpg.Record]:
     await conn.close()
     return users
 
+async def update_user(user: User, user_id: int) -> None:
+    conn = await asyncpg.connect(config.POSTGRES_DSN)
+
+    query = """
+        UPDATE users SET
+        first_name = $1,
+        last_name = $2,
+        phone_number = $3,
+        location = $4,
+        updated_at = $5
+        where id = $6
+    """
+
+    await conn.execute(query, user.first_name, user.last_name, user.phone_number, user.location, user.updated_at, user_id)
+    await conn.close()
+
+async def update_password(password: str, salt: str, user_id: int) -> None:
+    conn = await asyncpg.connect(config.POSTGRES_DSN)
+    updated_at = datetime.now()
+
+    query = """
+        UPDATE users
+        SET password = $1, 
+        salt = $2,
+        updated_at = $3
+        where id = $4
+    """
+
+    await conn.execute(query, password, salt, updated_at, user_id)
+    await conn.close()
 
 
