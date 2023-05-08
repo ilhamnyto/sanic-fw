@@ -16,14 +16,9 @@ async def validate_user_register_data(data: dict) -> bool:
     return True
 
 async def validate_update_profile(data: dict) -> bool:
-    if not data.get('username') or not data.get('phone_number') or not data.get('email') or \
-        not data.get('location'):
+    if not data.get('first_name') or not data.get('last_name') or not data.get('phone_number') or not data.get('location'):
         return False
-    elif len(data.get('username')) < 6 or len(data.get('phone_number')) < 11 or not '@' in data.get('email'):
-        return False
-    
-    user = await get_user_by_username_and_email(data.get('username'), data.get('email'))
-    if user:
+    elif len(data.get('first_name')) < 6 or len(data.get('first_name')) < 6 or len(data.get('phone_number')) < 10 or len(data.get('location')) < 1:
         return False
     
     phone_number = await get_user_by_phone_number(data.get('phone_number'))
@@ -41,7 +36,7 @@ async def validate_update_password(data: dict, user_id: int) -> bool:
     user = await check_user_password(user_id)
     expected_password = await hash_password(user['salt'], data.get('password'))
 
-    return expected_password == user['password']
+    return expected_password != user['password']
 
 async def generate_salt() -> str:
     return secrets.token_hex(32)

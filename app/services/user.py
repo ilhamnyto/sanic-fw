@@ -1,8 +1,9 @@
 from datetime import datetime
 from typing import Tuple
 
-from app.repositories.postgres.user import get_all_users, search_users, get_my_profile, get_user_by_username
+from app.repositories.postgres.user import get_all_users, search_users, get_my_profile, get_user_by_username, update_user, update_password
 from app.domain.user import User
+from app.utils.auth import generate_salt, hash_password
 from typing import List
 
 async def all_users_services(cursor: int) -> Tuple[List[User], bool]:
@@ -45,5 +46,25 @@ async def search_users_services(search_query: int, cursor: str) -> Tuple[List[Us
 
     return users, next
 
-async def update_profile_services() -> None:
-    pass
+async def update_profile_services(data: dict, user_id: int) -> None:
+
+    user = User(
+        username=None,
+        email=None,
+        password=None,
+        salt=None,
+        first_name=data.get('first_name'),
+        last_name=data.get('last_name'),
+        phone_number=data.get('phone_number'),
+        location=data.get('location'),
+        updated_at=datetime.now()
+    )
+
+    await update_user(user, user_id)
+
+async def update_password_services(data: dict, user_id: int) -> None:
+    print(data)
+    salt = await generate_salt()
+    hashed_password = await hash_password(salt=salt, password=data.get('password'))
+
+    await update_password(hashed_password, salt, user_id)
