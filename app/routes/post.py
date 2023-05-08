@@ -14,15 +14,13 @@ async def middleware(request: Request):
 @post_bp.get('/')
 async def all_posts(request: Request) -> JSONResponse:
     cursor = int(request.args.get("cursor")) if request.args.get("cursor") else None
-    limit = int(request.args.get("limit")) if request.args.get("limit") else 10
-    return await all_posts_controller(limit, cursor)
+    return await all_posts_controller(cursor)
 
 @post_bp.get('/me')
 async def my_posts(request: Request) -> JSONResponse:
     user_id = request.ctx.user_id
     cursor = int(request.args.get("cursor")) if request.args.get("cursor") else None
-    limit = int(request.args.get("limit")) if request.args.get("limit") else 10
-    return await my_posts_controller(user_id, limit, cursor)
+    return await my_posts_controller(user_id, cursor)
 
 @post_bp.post('/create')
 async def create_posts(request: Request) -> JSONResponse:

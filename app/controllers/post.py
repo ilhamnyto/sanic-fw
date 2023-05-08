@@ -1,33 +1,41 @@
 from dataclasses import asdict
 from app.schemas.basic import ErrorResponse
 from app.services.post import all_posts_services, create_posts_services, get_single_post_services, get_user_posts_services, search_post_services, my_posts_services
-from app.schemas.post import PostResponse, PostData
+from app.schemas.post import PostResponse, PostData, Paging
 from app.schemas.basic import SuccessResponse
 from typing import Optional
 
 from sanic.response import json, JSONResponse
 from sanic.log import logger
 
-async def all_posts_controller(limit: int, cursor: Optional[int] = None) -> JSONResponse:
+async def all_posts_controller(cursor: Optional[int] = None) -> JSONResponse:
     try:
-        posts = await all_posts_services(limit, cursor)
+        posts, next = await all_posts_services(cursor)
         data = []
         if posts:
             data = [PostData(id=post.posts_id, username=post.username, body=post.body, created_at=post.created_at) for post in posts]
-        success = PostResponse(data=data, status=200)
+        if posts and len(posts) > 1:
+            paging = Paging(cursor=int(posts[-1:][0].created_at.timestamp()) if next else None, next=next)
+        else:
+            paging = Paging(cursor=None, next=False)
+        success = PostResponse(status=201, data=data, paging=paging)
         return json(asdict(success), status=success.status)
     except Exception as e:
         logger.error(e)
         error = ErrorResponse(message=e, err_code="ERR", status=500)
         return json(asdict(error), status=error.status)
     
-async def my_posts_controller(user_id: int, limit: int, cursor: Optional[int] = None) -> JSONResponse:
+async def my_posts_controller(user_id: int, cursor: Optional[int] = None) -> JSONResponse:
     try:
-        posts = await my_posts_services(user_id, limit, cursor)
+        posts = await my_posts_services(user_id, cursor)
         data = []
         if posts:
             data = [PostData(id=post.posts_id, username=post.username, body=post.body, created_at=post.created_at) for post in posts]
-        success = PostResponse(data=data, status=200)
+        if posts and len(posts) > 1:
+            paging = Paging(cursor=int(posts[-1:][0].created_at.timestamp()) if next else None, next=next)
+        else:
+            paging = Paging(cursor=None, next=False)
+        success = PostResponse(status=201, data=data, paging=paging)
         return json(asdict(success), status=success.status)
     except Exception as e:
         logger.error(e)
@@ -73,7 +81,11 @@ async def search_posts_controller(search_query: str) -> JSONResponse:
         data = []
         if posts:
             data = [PostData(id=post.posts_id, username=post.username, body=post.body, created_at=post.created_at) for post in posts]
-        success = PostResponse(data=data, status=200)
+        if posts and len(posts) > 1:
+            paging = Paging(cursor=int(posts[-1:][0].created_at.timestamp()) if next else None, next=next)
+        else:
+            paging = Paging(cursor=None, next=False)
+        success = PostResponse(status=201, data=data, paging=paging)
         return json(asdict(success), status=success.status)
     except Exception as e:
         logger.error(e)

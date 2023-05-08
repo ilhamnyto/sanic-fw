@@ -1,4 +1,5 @@
 from dataclasses import asdict
+from typing import Optional
 from app.schemas.basic import ErrorResponse, SuccessResponse
 from app.schemas.user import UserResponse, User, Paging
 from app.services.user import all_users_services, get_users_services, search_users_services, my_profile_services, update_profile_services, update_password_services
@@ -7,7 +8,7 @@ from app.utils.auth import validate_update_password, validate_update_profile
 from sanic.response import json, JSONResponse
 from sanic.log import logger
 
-async def all_users_controller(cursor: int) -> JSONResponse:
+async def all_users_controller(cursor: Optional[int] = None) -> JSONResponse:
     try:
         users, next = await all_users_services(cursor)
         data = []
@@ -55,7 +56,7 @@ async def get_users_controller(username: str) -> JSONResponse:
         return json(asdict(error), error.status)
 
 
-async def search_users_controller(search_query: int, cursor: str) -> JSONResponse:
+async def search_users_controller(search_query: int, cursor: Optional[int] = None) -> JSONResponse:
     try:
         users, next = await search_users_services(search_query, cursor)
         data = []
