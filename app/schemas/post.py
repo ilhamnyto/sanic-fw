@@ -10,8 +10,8 @@ class PostData:
     
 @dataclass
 class Paging:
-    next: str
-    previous: str
+    cursor: str
+    next: bool
 
 @dataclass
 class PostResponse:

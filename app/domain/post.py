@@ -7,7 +7,7 @@ class Post:
     user_id: int
     body: str
     created_at: datetime
-    deleted_at: datetime
+    deleted_at: Optional[datetime] = None
     id: Optional[int] = None
 
 @dataclass
