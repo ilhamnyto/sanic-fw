@@ -31,11 +31,13 @@ async def create_posts(request: Request) -> JSONResponse:
 
 @post_bp.get('/<query_str:str>')
 async def get_posts(request: Request, query_str: str):
-    return await get_posts_controller(query_str)
+    cursor = int(request.args.get("cursor")) if request.args.get("cursor") else None
+    return await get_posts_controller(query_str, cursor)
 
 @post_bp.get('/search')
 async def search_posts(request: Request) -> JSONResponse:
     search_query = request.args.get("query")
-    return await search_posts_controller(search_query)
+    cursor = int(request.args.get("cursor")) if request.args.get("cursor") else None
+    return await search_posts_controller(search_query, cursor)
 
 

@@ -63,7 +63,6 @@ async def update_profile_services(data: dict, user_id: int) -> None:
     await update_user(user, user_id)
 
 async def update_password_services(data: dict, user_id: int) -> None:
-    print(data)
     salt = await generate_salt()
     hashed_password = await hash_password(salt=salt, password=data.get('password'))
 
