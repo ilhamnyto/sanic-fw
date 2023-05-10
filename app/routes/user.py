@@ -20,7 +20,8 @@ async def all_users(request: Request) -> JSONResponse:
 @users_bp.get('/me')
 async def my_profile(request: Request) -> JSONResponse:
     user_id = request.ctx.user_id
-    return await my_profile_controller(user_id)
+    redis = request.app.ctx.redis
+    return await my_profile_controller(user_id, redis)
 
 @users_bp.get('/search')
 async def search_users(request: Request) -> JSONResponse:

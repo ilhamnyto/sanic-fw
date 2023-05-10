@@ -4,9 +4,11 @@ from app.schemas.basic import ErrorResponse, SuccessResponse
 from app.schemas.user import UserResponse, User, Paging
 from app.services.user import all_users_services, get_users_services, search_users_services, my_profile_services, update_profile_services, update_password_services
 from app.utils.auth import validate_update_password, validate_update_profile
+import json as js
 
 from sanic.response import json, JSONResponse
 from sanic.log import logger
+import aioredis
 
 async def all_users_controller(cursor: Optional[int] = None) -> JSONResponse:
     try:
@@ -25,8 +27,13 @@ async def all_users_controller(cursor: Optional[int] = None) -> JSONResponse:
         error = ErrorResponse(status=500, message="error occured.", err_code="ERR")
         return json(asdict(error), error.status)
     
-async def my_profile_controller(user_id: int) -> JSONResponse:
+async def my_profile_controller(user_id: int, redis: aioredis.Connection) -> JSONResponse:
     try:
+        profile = await redis.get(f"profile:{user_id}")
+
+        if profile:
+            return json(js.loads(profile))
+        
         user = await my_profile_services(user_id)
         if user:
             data = User(username=user.username, email=user.email, created_at=str(user.created_at))
@@ -35,6 +42,8 @@ async def my_profile_controller(user_id: int) -> JSONResponse:
             return json(asdict(error), error.status)    
         
         success = UserResponse(status=201, data=data, paging=Paging(cursor=None, next=False))
+        await redis.set(f"profile:{user_id}", js.dumps(asdict(success)))
+
         return json(asdict(success), status=success.status)
     except Exception as e:
         logger.error(e)
