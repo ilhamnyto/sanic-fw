@@ -4,9 +4,11 @@ from app.services.post import all_posts_services, create_posts_services, get_sin
 from app.schemas.post import PostResponse, PostData, Paging
 from app.schemas.basic import SuccessResponse
 from typing import Optional
+import json as js
 
 from sanic.response import json, JSONResponse
 from sanic.log import logger
+import aioredis
 
 async def all_posts_controller(cursor: Optional[int] = None) -> JSONResponse:
     try:
@@ -53,7 +55,7 @@ async def create_posts_controller(data: dict) -> JSONResponse:
         error = ErrorResponse(message=e, err_code="ERR", status=500)
         return json(asdict(error), status=error.status)
 
-async def get_posts_controller(query_str: str, cursor: Optional[int] = None) -> JSONResponse:
+async def get_posts_controller(query_str: str, cursor: int, redis: aioredis.Connection) -> JSONResponse:
     try:
         if query_str[0] == '@':
             posts, next = await get_user_posts_services(query_str[1:], cursor)
@@ -64,15 +66,21 @@ async def get_posts_controller(query_str: str, cursor: Optional[int] = None) -> 
             else:
                 paging = Paging(cursor=None, next=False)
         else:
+            posts = await redis.get(f"posts:{query_str}")
+            if posts:
+                return json(js.loads(posts))
+
             posts = await get_single_post_services(query_str)
             if posts: 
-                posts = PostData(id=posts.posts_id, username=posts.username, body=posts.body, created_at=posts.created_at)
+                data = PostData(id=posts.posts_id, username=posts.username, body=posts.body, created_at=str(posts.created_at))
                 paging = Paging(next=False, cursor=None)
             else:
                 error = ErrorResponse(message="Posts not found", err_code="ERR_NOT_FOUND", status=404)
                 return json(asdict(error), status=error.status)
         
         success = PostResponse(data=data, status=200, paging=paging)
+        await redis.set(f"posts:{query_str}", js.dumps(asdict(success)))
+
         return json(asdict(success), status=success.status)
     except Exception as e:
         logger.error(e)

@@ -3,7 +3,6 @@ from app.utils.jwt import validate_token
 
 from sanic import Request, Blueprint
 from sanic.response import JSONResponse
-from aioredis import Connection
 
 post_bp = Blueprint("posts", url_prefix="api/v1/posts")
 
@@ -32,7 +31,8 @@ async def create_posts(request: Request) -> JSONResponse:
 @post_bp.get('/<query_str:str>')
 async def get_posts(request: Request, query_str: str):
     cursor = int(request.args.get("cursor")) if request.args.get("cursor") else None
-    return await get_posts_controller(query_str, cursor)
+    redis = request.app.ctx.redis
+    return await get_posts_controller(query_str, cursor, redis)
 
 @post_bp.get('/search')
 async def search_posts(request: Request) -> JSONResponse:
