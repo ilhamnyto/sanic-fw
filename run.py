@@ -15,7 +15,7 @@ app.blueprint(post_bp)
 
 @app.listener('before_server_start')
 async def start_redis(app: Sanic):
-    app.ctx.redis = await aioredis.from_url('redis://redis')
+    app.ctx.redis = await aioredis.from_url(config.REDIS_URL)
 
 if __name__ == '__main__':
     app.run(host=config.HOST, port=config.PORT, debug=config.DEBUG)

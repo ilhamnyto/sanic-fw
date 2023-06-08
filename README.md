@@ -1,51 +1,47 @@
-# Build REST API using Sanic Framework With Clean Architecture
+# REST API with Clean Architecture
 
-This is an example how i use Sanic to build a REST API
+This project is a personal learning project aimed at building a REST API using Python with a clean architecture approach. The technology stack used includes Sanic, PostgreSQL, Redis, and Docker.
 
-Stack that i use:
-- Sanic
-- PostgreSQL
-- Redis
-- Docker
+## Features
 
-## Run on your local machine
-```
-docker-compose build && docker-compose up
-```
+- User authentication and authorization
+- CRUD operations for user and posts entities
+- JSON Web Token (JWT) based authentication
+- PostgreSQL database integration
+- Redis caching for improved performance
 
-## Create User Table
-```
-CREATE TABLE IF NOT EXISTS users (
-            id serial primary key,
-            username varchar(100) NOT NULL,
-            first_name varchar(100),
-            last_name varchar(100),
-            email varchar(100) NOT NULL,
-            phone_number varchar(100),
-            location varchar(100),
-            password varchar(100) NOT NULL,
-            salt varchar(100) NOT NULL,
-            created_at timestamp,
-            updated_at timestamp
-        )
-```
-## Create Posts Table
-```
- CREATE TABLE IF NOT EXISTS posts (
-            id serial primary key,
-            user_id int NOT NULL,
-            body text NOT NULL,
-            created_at timestamp,
-            deleted_at timestamp,
-            CONSTRAINT fk_posts
-            FOREIGN KEY(user_id)
-            REFERENCES users(id)
-        )
-```
-Or you can run this script to create both tables but you need to edit the env files.
-```
-python migrate.py
-```
+## Installation
 
-## Postman Documentation
-[![Postman](https://cdn.iconscout.com/icon/free/png-512/free-postman-3521648-2945092.png?f=avif&w=32)](https://documenter.getpostman.com/view/13820554/2s93eZzBrj)
+To run this project locally, follow these steps:
+
+1. Clone the repository: `git clone https://github.com/ilhamnyto/sanic-fw.git`
+2. Create a Virtual Environment: `virtualenv venv`
+3. Activate virtualenv `source venv/Scripts/activate` (Windows) or `source venv/bin/activate` (Linux)
+4. Install dependencies: `pip install -r requirements.txt`
+5. Copy the env files: `cp .env.test .env`.
+6. Set up the Server host, port, PostgreSQL database, Redis and configure the connection details in `.env` or `.docker-compose.yaml`.
+7. Run the database migrations: `python migrate.py`
+8. Start the application: `python run.py` or `docker-compose build && docker-compose up`
+
+## API Documentation
+
+For detailed information on the API endpoints and their usage, refer to the [API Documentation](https://documenter.getpostman.com/view/13820554/2s93eZzBrj).
+
+## Configuration
+
+The project's configuration is stored in the `.env` or `docker-compose.yaml` file. Update this file to adjust the server port, database connection details, Redis configuration, and other settings as needed.
+
+
+## License
+
+This project is licensed under the [MIT License](./LICENSE).
+
+## Acknowledgments
+
+This project was made possible by the following open-source libraries:
+
+- [Sanic](https://sanic.dev/)
+- [PostgreSQL](https://www.postgresql.org)
+- [Redis](https://redis.io)
+- [Docker](https://www.docker.com/)
+
