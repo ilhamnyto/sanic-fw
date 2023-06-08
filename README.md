@@ -17,7 +17,7 @@ To run this project locally, follow these steps:
 1. Clone the repository: `git clone https://github.com/ilhamnyto/sanic-fw.git`
 2. Create a Virtual Environment: `virtualenv venv`
 3. Activate virtualenv `source venv/Scripts/activate` (Windows) or `source venv/bin/activate` (Linux)
-4. Install dependencies: `pip install requirements.txt`
+4. Install dependencies: `pip install -r requirements.txt`
 5. Copy the env files: `cp .env.test .env`.
 6. Set up the Server host, port, PostgreSQL database, Redis and configure the connection details in `.env` or `.docker-compose.yaml`.
 7. Run the database migrations: `python migrate.py`
