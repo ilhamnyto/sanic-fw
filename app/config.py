@@ -19,5 +19,6 @@ class Config:
     POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD")
     POSTGRES_NAME: str = os.getenv("POSTGRES_NAME")
     POSTGRES_DSN: str = f"postgres://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_NAME}"
+    REDIS_URL: str = os.getenv("REDIS_URL")
 
 config = Config()
